@@ -13,32 +13,8 @@ sub KiokuDB::Entry::BUILD { shift->root }; # force building of root for is_deepl
 $_->make_mutable, $_->make_immutable for KiokuDB::Entry->meta; # recreate new
 
 {
-    my $entry;
     my $s_csv = KiokuDB::Serializer::CSV->new;
-#    warn Dumper($s_csv->serialize($entry));
-=cut
-$VAR1 = bless( {
-                 'root' => 1,
-                 'id' => 'zen6775@zen.co.uk',
-                 'data' => {
-                           'email' => 'zen6775@zen.co.uk',
-                           'password' => bless( {
-                                                'data' => '{SSHA}AhHgCcFykwxAtzWtCubJfqc7rJPY1rgStmioZylvOiz/w+3NvDGoCQ==',
-                                                'class' => 'Authen::Passphrase::SaltedDigest'
-                                              }, 'KiokuDB::Entry' ),
-                           'verified' => '1',
-                           'last_name' => 'Butterfeild',
-                           'first_name' => 'Miss',
-                           'datetime' => bless( {
-                                                'data' => '1264007615',
-                                                'class' => 'DateTime'
-                                              }, 'KiokuDB::Entry' ),
-                           'agree_tos' => '1'
-                         },
-                 'class' => 'CHG::ParkingMobility::Model::User'
-               }, 'KiokuDB::Entry' );
-=cut
-    $entry = KiokuDB::Entry->new(
+    my $entry = KiokuDB::Entry->new(
         class => 'Foo',
         data => {
             first_name => 'Nobody',
@@ -52,16 +28,7 @@ $VAR1 = bless( {
     does_ok( $s_csv, "KiokuDB::Serializer" );
     does_ok( $s_csv, "KiokuDB::Backend::Serialize" );
 
-=cut
-    my $entry = KiokuDB::Entry->new(
-        class => "Foo",
-        data  => { foo => "bar" },
-    );
-=cut
-
-
     my $ser = $s_csv->serialize( $entry );
-warn $ser;
     ok( !ref($ser), "non ref" );
     ok( length($ser), "got data" );
 =cut
@@ -96,6 +63,5 @@ warn $ser;
     is_deeply( $entries[0], $entry, "round tripping" );
 =cut
 }
-
 
 done_testing;
