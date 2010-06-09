@@ -31,9 +31,10 @@ $_->make_mutable, $_->make_immutable for KiokuDB::Entry->meta; # recreate new
     my $ser = $s_csv->serialize( $entry );
     ok( !ref($ser), "non ref" );
     ok( length($ser), "got data" );
-=cut
 
     is_deeply( $s_csv->deserialize($ser), $entry, "round tripping" );
+
+=cut
 
     my $buf = '';
 
