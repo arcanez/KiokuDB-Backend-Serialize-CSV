@@ -34,7 +34,6 @@ $_->make_mutable, $_->make_immutable for KiokuDB::Entry->meta; # recreate new
 
     is_deeply( $s_csv->deserialize($ser), $entry, "round tripping" );
 
-=cut
 
     my $buf = '';
 
@@ -46,6 +45,7 @@ $_->make_mutable, $_->make_immutable for KiokuDB::Entry->meta; # recreate new
 
     ok( length($buf), "serialize_to_stream" );
 
+=cut
     open my $in, "<", \$buf;
 
     my @entries;
