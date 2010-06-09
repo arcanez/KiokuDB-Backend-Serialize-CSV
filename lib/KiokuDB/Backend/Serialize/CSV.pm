@@ -82,9 +82,22 @@ sub serialize {
 
 sub deserialize {
     my ( $self, $blob ) = @_;
-    my $status = $self->csv->parse($blob);
-    my @fields = $self->csv->fields; warn "@fields";
-    return KiokuDB::Entry->new( class => 'Foo', data => { foo => 'bar' } );
+    my $data;
+    my @lines = split /\n/, $blob;
+    my $header = shift @lines;
+
+    my $status = $self->csv->parse($header);
+    my @headings = $self->csv->fields;
+
+    for my $line (@lines) {
+        $status = $self->csv->parse($line);
+        my @fields = $self->csv->fields;
+        $data->{$headings[$_]} = $fields[$_] for (0..$#headings);
+    }
+
+    my $class = delete $data->{class};
+
+    return KiokuDB::Entry->new( class => $class, data => $data );
 }
 
 sub serialize_to_stream {
