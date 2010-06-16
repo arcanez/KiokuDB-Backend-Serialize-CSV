@@ -18,6 +18,18 @@ has csv => (
     handles => [ qw( combine parse string getline print column_names ) ],
 );
 
+has seen_headers => (
+    isa => 'Bool',
+    is => 'rw',
+    default => 0,
+);
+
+has eol => (
+    isa => 'Str',
+    is => 'rw',
+    default => "\n",
+);
+
 sub _build_csv {
     my $self = shift;
 
@@ -26,7 +38,7 @@ sub _build_csv {
         quote_char          => '"',
         escape_char         => '"',
         sep_char            => ',',
-        eol                 => "\n",
+        eol                 => $self->eol,
         binary              => 1,
         allow_loose_quotes  => 1,
         allow_loose_escapes => 1,
@@ -71,10 +83,16 @@ sub serialize {
     );
 
     $self->combine( @headings );
-    $row = $self->string unless defined $self->column_names;
+
+    unless ($self->seen_headers) {
+        $row = $self->string;
+        $self->seen_headers(1);
+    }
+
     $self->column_names( [ @headings ] );
 
     $self->combine( @fields );
+
     $row .= $self->string;
 
     return $row;
@@ -82,13 +100,14 @@ sub serialize {
 
 sub deserialize {
     my ( $self, $blob ) = @_;
-    my $data;
-    my @lines = split /\n/, $blob;
+    my $eol = $self->eol;
+    my @lines = split /$eol/, $blob;
     my $header = shift @lines;
 
     my $status = $self->csv->parse($header);
     my @headings = $self->csv->fields;
 
+    my $data;
     for my $line (@lines) {
         $status = $self->csv->parse($line);
         my @fields = $self->csv->fields;
